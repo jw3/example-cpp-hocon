@@ -5,64 +5,71 @@ see puppet's https://github.com/puppetlabs/cpp-hocon
 
 requires puppets' https://github.com/puppetlabs/leatherman
 
-### in hocon
+### example
+
+from https://www.pdal.io/pipeline.html
+
+#### in hocon
 
 ```hocon
 pipeline = [
     {
-      filename: in.las
-      tag: a
+      filename: A.las
+      spatialreference: "EPSG:26916"
     }
-
     {
-      type: readers.shp
-      path: world-continents.shp
-      layer: world-continents
-      tag: b
+      type: filters.reprojection
+      in_srs: "EPSG:26916"
+      out_srs: "EPSG:4326"
+      tag: A2
     }
-
+    {
+      filename: B.las
+      tag: B
+    }
     {
       type: filters.merge
-      tag: ab
-      inputs:
-      [
-        a
-        b
-      ]
+      tag: merged
+      inputs: [A2, B]
     }
-
     {
-      type: writers.null
+      type: writers.gdal
+      filename: output.tif
     }
 ]
 ```
 
 
-### out json
+#### out json
 
 ```json
 {
     "pipeline" : [
         {
-            "filename" : "in.las",
-            "tag" : "a"
+            "filename" : "A.las",
+            "spatialreference" : "EPSG:26916"
         },
         {
-            "layer" : "world-continents",
-            "path" : "world-continents.shp",
-            "tag" : "b",
-            "type" : "readers.shp"
+            "in_srs" : "EPSG:26916",
+            "out_srs" : "EPSG:4326",
+            "tag" : "A2",
+            "type" : "filters.reprojection"
+        },
+        {
+            "filename" : "B.las",
+            "tag" : "B"
         },
         {
             "inputs" : [
-                "a",
-                "b"
+                "A2",
+                "B"
             ],
-            "tag" : "ab",
+            "tag" : "merged",
             "type" : "filters.merge"
         },
         {
-            "type" : "writers.null"
+            "filename" : "output.tif",
+            "type" : "writers.gdal"
         }
     ]
 }
