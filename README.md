@@ -74,3 +74,38 @@ pipeline = [
     ]
 }
 ```
+
+#### target json
+
+```json
+{
+    "pipeline":[
+        {
+            "filename":"A.las",
+            "spatialreference":"EPSG:26916"
+        },
+        {
+            "type":"filters.reprojection",
+            "in_srs":"EPSG:26916",
+            "out_srs":"EPSG:4326",
+            "tag":"A2"
+        },
+        {
+            "filename":"B.las",
+            "tag":"B"
+        },
+        {
+            "type":"filters.merge",
+            "tag":"merged",
+            "inputs":[
+                "A2",
+                "B"
+            ]
+        },
+        {
+            "type":"writers.gdal",
+            "filename":"output.tif"
+        }
+    ]
+}
+```
